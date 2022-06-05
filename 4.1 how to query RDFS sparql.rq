@@ -1,0 +1,23 @@
+PREFIX : <http://example.com/base/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fo: <http://www.w3.org/1999/XSL/Format#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dbpr: <http://dbpedia.org/resource/>
+PREFIX dbpo: <http://dbpedia.org/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# select all authors and the titles of their notable works ordered by authors in ascending order and limit  the results to the first 100 results starting the list at offset 10 position:
+
+SELECT ?author_name ?title
+FROM <http://dbpedia.org/>
+WHERE {
+    ?author rdf:type dbpo:Writer .
+    ?author rdfs:label ?author_name .
+    ?author dbpo:notableWork ?work .
+    ?work rdfs:label ?title .
+    FILTER (LANG(?title)="pt")
+}
+ORDER BY ASC (?author_name)
+LIMIT 100
+OFFSET 10
