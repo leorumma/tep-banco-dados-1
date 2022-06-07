@@ -1,0 +1,33 @@
+PREFIX : <http://example.com/base/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fo: <http://www.w3.org/1999/XSL/Format#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dbpr: <http://dbpedia.org/resource/>
+PREFIX dbpo: <http://dbpedia.org/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# 1) Quais as propriedades que Dan Brickley usou para descrever a si mesmo? Faça duas versões de solução: (i) mostrar as triplas; e (iii) mostrar apenas as propriedades (sem repetições).
+
+SELECT ?a ?name ?nick
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+ ?a rdf:type foaf:Person .
+ ?a foaf:name ?name .
+ ?a foaf:nick ?nick .
+ filter(str(?nick)="danbri") .
+}
+
+# 2)
+
+SELECT ?mail
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+ ?a rdf:type foaf:Person .
+ ?a foaf:nick ?nick .
+ filter(str(?nick)="danbri") .
+ ?a foaf:mbox ?mail .
+}
+
+# 3)
+
