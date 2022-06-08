@@ -18,16 +18,77 @@ WHERE {
  filter(str(?nick)="danbri") .
 }
 
-# 2)
+# 2) Mostre o(s) e-mail(s) de Dan Brickley.
 
 SELECT ?mail
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
- ?a rdf:type foaf:Person .
- ?a foaf:nick ?nick .
- filter(str(?nick)="danbri") .
- ?a foaf:mbox ?mail .
+    ?a rdf:type foaf:Person .
+    ?a foaf:nick ?nick .
+    filter(str(?nick)="danbri") .
+    ?a foaf:mbox ?mail .
 }
 
-# 3)
+# 3) Mostre, em ordem alfabética, os nomes dos amigos de Dan Brickley.
 
+SELECT ?nomeDosAmigos
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+    ?amigos foaf:name ?nomeDosAmigos .
+}
+ORDER BY ASC (?nomeDosAmigos)
+
+# 4) Encontre as pessoas (retorne seus nomes e IRIs dos recursos que as representam) que foram mencionadas no arquivo FOAF de Dan Brickley, ordenando os resultados em ordem alfabética do nome dessas pessoas. A consulta deve exibir apenas os resultados do 11o ao 20o.
+
+SELECT DISTINCT ?nomeDasPessoas ?iris
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    ?pessoas rdf:type foaf:Person .
+    ?pessoas foaf:name ?nomeDasPessoas .
+    ?pessoas rdfs:seeAlso ?iris .
+}
+
+# 5) Encontre os amigos de Dan Brickley que estão relacionados à W3C (dica: use o e-mail para filtrar os amigos desejados). Apresente o nome e e-mail desses amigos.
+
+SELECT ?nomeDosAmigos ?emailDosAmigos
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+    ?amigos foaf:name ?nomeDosAmigos .
+    ?amigos foaf:mbox ?emailDosAmigos .
+    FILTER regex(str(?emailDosAmigos), "@w3.org$", "i") .
+}
+
+# 6) O que foi dito sobre Tim Berners-Lee no arquivo FOAF de Dan Brickley? Sua consulta deve ser case-insensitive para selecionar o nome de Tim Berners-Lee.
+
+
+# 7) Encontre todos os formatos de fotos usados por amigos de Dan Brickley.
+SELECT ?nomeDosAmigos ?formatoDeFoto
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+    ?amigos foaf:name ?nomeDosAmigos .
+    ?amigos foaf:img ?formatoDeFoto .
+}
+
+# 8) Encontre as relações de amizade descritas no arquivo de Dan Brickley que não o envolvem diretamente.
+
+SELECT DISTINCT ?nomeAmigosIndiretos
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    ?pessoas rdf:type foaf:Person .
+    ?pessoas foaf:name ?nomes .
+    filter(?nomes in(?nomeDosAmigos)) .
+    ?pessoas foaf:knows ?amigosIndiretos .
+    ?amigosIndiretos foaf:name ?nomeAmigosIndiretos .
+    {
+        SELECT ?nomeDosAmigos
+        FROM <http://danbri.org/foaf.rdf>
+        WHERE {
+            <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+            ?amigos foaf:name ?nomeDosAmigos .
+        }
+    }
+
+}
