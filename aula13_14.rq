@@ -62,7 +62,7 @@ WHERE {
 
 # 6) O que foi dito sobre Tim Berners-Lee no arquivo FOAF de Dan Brickley? Sua consulta deve ser case-insensitive para selecionar o nome de Tim Berners-Lee.
 
-SELECT DISTINCT ?s ?o ?p
+SELECT DISTINCT ?o ?p
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
     ?s ?o ?p .
@@ -82,19 +82,13 @@ WHERE {
 
 # 8) Encontre as relações de amizade descritas no arquivo de Dan Brickley que não o envolvem diretamente.
 
-SELECT DISTINCT ?s ?o ?p
-FROM <http://danbri.org/foaf.rdf>
-WHERE {
-    ?s ?o ?p .
-    ?s foaf:name ?name
-    filter regex(str(?name),"^Tim Berners-Lee$", "i") .
-}
+
 
 # 9) Mostre todos os literais que possuem definição de idioma explícito como inglês (“en”).
 
-SELECT DISTINCT *
+SELECT ?literais
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
-    ?s ?o ?p .
-    filter(langMatches(lang(?p), "en")) .
+    ?s ?o ?literais .
+    filter(langMatches(lang(?literais), "en")) .
 }
