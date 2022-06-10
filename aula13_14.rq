@@ -51,7 +51,7 @@ FROM <http://danbri.org/foaf.rdf>
 WHERE {
     ?pessoas rdf:type foaf:Person .
     ?pessoas foaf:name ?nomeDasPessoas .
-    ?pessoas rdfs:seeAlso ?iris .
+    ?pessoas ?iris ?p .
 }
 ORDER BY ASC (?nomeDasPessoas)
 LIMIT 10 OFFSET 10
