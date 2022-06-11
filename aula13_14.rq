@@ -13,19 +13,19 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 # 1) Quais as propriedades que Dan Brickley usou para descrever a si mesmo? Faça duas versões de solução: 
 
 # (i) mostrar as triplas;
-SELECT ?s ?o ?p
+SELECT ?s ?p ?o
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
-    ?s ?o ?p .
+    ?s ?p ?o .
     ?s foaf:nick ?nick .
     filter regex(str(?nick), "^danbri$", "i") .
 }
 
 # (iii) mostrar apenas as propriedades (sem repetições).
-SELECT DISTINCT ?o
+SELECT DISTINCT ?p
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
-    <https://danbri.org/foaf.rdf#danbri> ?o ?p .
+    <https://danbri.org/foaf.rdf#danbri> ?p ?o .
 }
 
 
@@ -49,12 +49,15 @@ ORDER BY ASC (?nomeDosAmigos)
 
 # 4) Encontre as pessoas (retorne seus nomes e IRIs dos recursos que as representam) que foram mencionadas no arquivo FOAF de Dan Brickley, ordenando os resultados em ordem alfabética do nome dessas pessoas. A consulta deve exibir apenas os resultados do 11o ao 20o.
 
-SELECT ?nomeDasPessoas ?iris
+SELECT ?nomeDasPessoas ?o ?p
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
     ?pessoas rdf:type foaf:Person .
     ?pessoas foaf:name ?nomeDasPessoas .
-    ?pessoas ?iris ?p .
+    ?pessoas ?p ?o .
+    filter (isIRI(?p)) .
+    filter (isIRI(?o)) .
+    
 }
 ORDER BY ASC (?nomeDasPessoas)
 LIMIT 10 OFFSET 10
@@ -67,15 +70,15 @@ WHERE {
     <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
     ?amigos foaf:name ?nomeDosAmigos .
     ?amigos foaf:mbox ?emailDosAmigos .
-    FILTER regex(str(?emailDosAmigos), "@w3.org$", "i") .
+    FILTER regex(str(?emailDosAmigos), "@w3.org", "i") .
 }
 
 # 6) O que foi dito sobre Tim Berners-Lee no arquivo FOAF de Dan Brickley? Sua consulta deve ser case-insensitive para selecionar o nome de Tim Berners-Lee.
 
-SELECT DISTINCT ?o ?p
+SELECT DISTINCT ?p ?o
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
-    ?s ?o ?p .
+    ?s ?p ?o .
     ?s foaf:name ?name
     filter regex(str(?name),"^Tim Berners-Lee$", "i") .
 }
@@ -92,13 +95,24 @@ WHERE {
 
 # 8) Encontre as relações de amizade descritas no arquivo de Dan Brickley que não o envolvem diretamente.
 
-
+SELECT ?nomes ?nicks
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    ?pessoas rdf:type foaf:Person .
+    ?pessoas foaf:knows ?amizades .
+    ?amizades foaf:name ?nomes .
+    OPTIONAL {
+        ?amizades foaf:nick ?nicks .
+        FILTER (str(?nicks) != "danbri") .
+    }
+    filter (str(?nomes) != "danbri") .
+}
 
 # 9) Mostre todos os literais que possuem definição de idioma explícito como inglês (“en”).
 
 SELECT ?literais
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
-    ?s ?o ?literais .
+    ?s ?p ?literais .
     filter(langMatches(lang(?literais), "en")) .
 }
