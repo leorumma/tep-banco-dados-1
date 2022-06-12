@@ -1,0 +1,74 @@
+#Nome: Leonardo Ruma
+#DRE: 115198102
+
+PREFIX : <http://example.com/base/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fo: <http://www.w3.org/1999/XSL/Format#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dbpr: <http://dbpedia.org/resource/>
+PREFIX dbpo: <http://dbpedia.org/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# 1) Encontre todas as pessoas conhecidas por Dan Brickley, mostre seus nomes, e-mails e homepages. Devem ser mostradas todas as pessoas (IRI do recurso que a representa) mesmo que nem todas essas informações sobre elas estejam disponíveis.
+
+SELECT ?amigos ?nomes ?emails ?homepages
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+    ?amigos foaf:name ?nomes .
+    OPTIONAL {
+        ?amigos foaf:mbox ?emails .
+        ?amigos foaf:homepage ?homepages .   
+    }
+    
+}
+
+# 2) Encontre todos os e-mails e/ou a representação textual resultante da aplicação da função matemática de criptografia SHA1 de todas as pessoas. Apresente-os junto com o nome da pessoa correspondente.
+
+SELECT ?nomes ?emails ?sha1sum
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+	?pessoas rdf:type foaf:Person .
+    ?pessoas foaf:name ?nomes .
+	?pessoas foaf:mbox ?emails .
+    OPTIONAL {
+        ?pessoas foaf:mbox_sha1sum ?sha1sum .
+    }
+}
+
+# 3) Encontre todas as pessoas (IRI do recurso que a representa) que não possuem homepages definidas.
+
+SELECT ?amigos
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+    <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+    OPTIONAL {
+        ?amigos foaf:homepage ?homepages .   
+    }
+    FILTER (!bound(?homepages)) .
+    FILTER (isIRI(?amigos)) .
+}
+
+# 4) Quantos e-mails estão definidos no documento FOAF de Dan Brickley?
+
+SELECT (count(?emails) as ?countEmails)
+FROM <http://danbri.org/foaf.rdf>
+WHERE {
+	?pessoas rdf:type foaf:Person .
+	?pessoas foaf:mbox ?emails .
+}
+
+# 5) Encontre o(s) amigo(s) de Dan Brickley (IRI do recurso que o representa) que possuem três ou mais e-mails especificados. Indique o número de e-mails e também o nome do amigo sempre que possível.
+
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?amigos (min(?emails) as ?min)
+WHERE {
+    <https://danbri.org/foaf.rdf#danbri> foaf:knows ?amigos .
+    ?amigos foaf:mbox ?emails
+    OPTIONAL {
+        ?amigos foaf:name ?nomes .
+    }
+}
+GROUP BY ?amigos
+#HAVING (?min > 3)
