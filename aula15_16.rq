@@ -52,7 +52,7 @@ WHERE {
 
 # 4) Quantos e-mails estão definidos no documento FOAF de Dan Brickley?
 
-SELECT (count(?emails) as ?countEmails)
+SELECT (count(distinct ?emails) as ?countEmails)
 FROM <http://danbri.org/foaf.rdf>
 WHERE {
 	?pessoas rdf:type foaf:Person .
