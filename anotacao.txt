@@ -1,0 +1,5 @@
+liyang http://www.liyangyu.com/foaf.rdf #liyang
+dan http://danbri.org/foaf.rdf #danbri
+
+tep_bd_1
+Repositório da disciplina tópicos especiais em banco de dados 1

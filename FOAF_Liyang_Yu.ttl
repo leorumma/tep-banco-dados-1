@@ -1,0 +1,21 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<http://www.liyangyu.com/foaf.rdf#liyang> foaf:name "liyang yu" ;
+	foaf:title "Dr" ;
+	foaf:givenname "liyang" ;
+	foaf:family_name "yu" ;
+	foaf:mbox_sha1sum "1613a9c3ec8b18271a8fe1f79537a7b08803d896" ;
+	foaf:homepage <http://www.liyangyu.com> ;
+	foaf:workplaceHomepage <http://www.delta.com> ;
+	a foaf:Person ;
+	foaf:made <http://www4.wiwiss.fu-berlin.de/bookmashup/books/3642159699> , <http://www4.wiwiss.fu-berlin.de/bookmashup/books/1584889330> ;
+	foaf:knows _:node1atbu8o4tx1 .
+
+_:node1atbu8o4tx1 a foaf:Person ;
+	foaf:mbox <mailto:libby.miller@bristol.ac.uk> .
+
+<http://www.liyangyu.com/foaf.rdf#liyang> foaf:topic_interest <http://dbpedia.org/resource/Semantic_Web> .

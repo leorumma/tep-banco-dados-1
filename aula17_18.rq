@@ -1,0 +1,70 @@
+#Nome: Leonardo Ruma
+#DRE: 115198102
+
+PREFIX : <http://example.com/base/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fo: <http://www.w3.org/1999/XSL/Format#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dbpr: <http://dbpedia.org/resource/>
+PREFIX dbpo: <http://dbpedia.org/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# 1) Crie um novo grafo RDF que contém uma coleção de tuplas indicando que os recursos representados são pessoas, seus nomes e seus respectivos e-mails (usando vocabulário FOAF). Sua solução deve construir um grafo incluindo todas as pessoas mencionadas no arquivo FOAF de Dan Brickley.
+CONSTRUCT {
+    ?pessoas foaf:name ?nomes .
+	?pessoas foaf:mbox ?emails .
+} 
+WHERE {
+    ?pessoas rdf:type foaf:Person .
+    ?pessoas foaf:name ?nomes .
+    ?pessoas foaf:mbox ?emails .
+}
+
+# 2) O que foi dito sobre Tim Berners-Lee no arquivo FOAF de Dan Brickley?
+CONSTRUCT {
+	?s ?p ?o .
+}
+WHERE {
+    ?s ?p ?o .
+    ?s foaf:name ?name .
+    filter regex(str(?name),"^Tim Berners-Lee$", "i") .
+}
+
+
+# 3) Encontre todos os formatos de fotos usados por amigos de Dan Brickley. Use property path para simplificar a escrita da solução.
+SELECT ?formato_de_foto
+FROM <http://www.openrdf.org/schema/sesame#nil>
+WHERE {
+    <http://danbri.org/foaf.rdf#danbri> foaf:knows/foaf:img ?formato_de_foto .
+}
+
+# 4) Escreva uma consulta para buscar pessoas descritas no arquivo FOAF de Dan Brickley que tenham um documento na Wikipedia (IRIs contendo http://en.wikipedia.org) que as descrevam (foaf:isPrimaryTopicOf). Para cada uma dessas pessoas, busque as seguintes informações na DBpedia: (i) nome de nascimento (dbo:birthName), (ii) local de nascimento (dbp:birthPlace) e (iii) data de nascimento (dbo:birthDate); sabendo que a IRI que representa a pessoa na DBpedia também indica o mesmo documento da Wikipedia que possui a pessoa como tópico principal (foaf:isPrimaryTopicOf). Use federação de consultas para resolver essa questão.
+SELECT ?birth_name ?birth_place ?birth_date
+FROM <http://www.openrdf.org/schema/sesame#nil>
+WHERE {
+    ?pessoas rdf:type foaf:Person .
+    ?pessoas foaf:isPrimaryTopicOf ?topic .
+    FILTER(isIRI(?pessoas)) .
+    FILTER regex(str(?topic), "en.wikipedia.org", "i") .
+        SERVICE <https://dbpedia.org/sparql> {
+        ?s dbpo:birthName ?birth_name .
+        ?s dbpo:birthPlace ?birth_place .
+        ?s dbpo:birthDate ?birth_date .
+        FILTER(isIRI(?s)) .
+        FILTER regex(str(?s), "Tim_Berners-Lee", "i") .
+        }
+}
+
+# 5) Pergunte se os dois documentos descrevem alguém em comum (sua consulta deve retornar um booleano).
+ASK 
+FROM <http://www.openrdf.org/schema/sesame#nil>
+FROM NAMED <http://www.liyangyu.com/foaf.rdf>
+WHERE {
+    ?default_pessoa rdf:type foaf:Person .
+    ?default_pessoa foaf:name ?default_name .
+    GRAPH ?g {
+        ?g_pessoa rdf:type foaf:Person .
+        ?g_pessoa foaf:name ?g_name .
+    }
+}    

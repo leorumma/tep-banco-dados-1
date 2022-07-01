@@ -1,0 +1,75 @@
+#Nome: Leonardo Ruma
+#DRE: 115198102
+
+# Utilizado nas consultas https://dbpedia.org/sparql
+
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+# 1) Retornar todos os possíveis tipos de conceitos na DBpedia.
+SELECT DISTINCT ?conceitos
+FROM <http://dbpedia.org>
+WHERE {
+    ?conceitos ?p ?o .
+}
+
+# 2) Olhar a página da DBpedia do filme "La La Land": http://dbpedia.org/page/La_La_Land_(film) . Como podemos obter a lista completa dos filmes? Indique o total de filmes que podem ser obtidos.
+SELECT (count(DISTINCT ?film_name) AS ?count_film)
+FROM <http://dbpedia.org>
+WHERE {
+    ?film rdf:type dbo:Film .
+    ?film rdfs:label ?film_name .
+}
+
+# 3) Retornar todas as propriedades de Filme (dbo:Film).
+SELECT DISTINCT ?property
+FROM <http://dbpedia.org>
+WHERE {
+    ?film rdf:type dbo:Film .
+    ?film ?property ?value .
+    ?property rdf:type rdf:Property .
+}
+
+# 4) Faça uma consulta para mostrar a IRI e os nomes (labels nos diferentes idiomas) do filme "La La Land" (<http://dbpedia.org/resource/ La_La_Land_(film)>).
+SELECT ?film ?film_name
+FROM <http://dbpedia.org>
+where {
+    ?film rdf:type dbo:Film .
+    ?film rdfs:label ?film_name .
+    FILTER regex(str(?film_name), "^La La Land$", "i") .
+    FILTER (isIRI(?film)) .
+}
+
+# 5) Faça uma consulta para mostrar as IRIs e os nomes em português dos 100 primeiros filmes.
+SELECT ?film ?film_name
+FROM <http://dbpedia.org>
+WHERE {
+    ?film rdf:type dbo:Film .
+    ?film rdfs:label ?film_name .
+    FILTER(langMatches(lang(?film_name ), "pt")) .
+    FILTER (isIRI(?film)) .
+}
+LIMIT 100
+
+# 6) Faça uma consulta para mostrar as IRIs e os nomes em português dos filmes que começam com a letra "X".
+SELECT ?film ?film_name
+FROM <http://dbpedia.org>
+WHERE {
+    ?film rdf:type dbo:Film .
+    ?film rdfs:label ?film_name .
+    FILTER regex(str(?film_name), "^x", "i") .
+    FILTER (isIRI(?film)) .
+}
+
+# 7) Faça uma consulta para mostrar a(s) classificação(ões) do filme "La La Land" (dct:subject).
+SELECT ?film ?film_name ?classificacao_label
+FROM <http://dbpedia.org>
+WHERE {
+    ?film rdf:type dbo:Film .
+    ?film rdfs:label ?film_name .
+    ?film dct:subject ?classificacao .
+    ?classificacao rdfs:label ?classificacao_label .
+    FILTER regex(str(?film_name), "^La La Land$", "i") .
+    FILTER (isIRI(?film)) .
+}
