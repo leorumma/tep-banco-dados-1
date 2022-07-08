@@ -1,0 +1,50 @@
+# 1) Mostre os filmes (suas IRIs e labels) em que o diretor do filme “La La Land” (http://dbpedia.org/resource/ La_La_Land) atuou como diretor e/ou escritor.
+
+# SELECT *
+# FROM <http://dbpedia.org>
+# WHERE {
+#     ?film rdf:type dbo:Film .
+#     ?film dbo:director ?director .
+#     ?director rdfs:label ?director_name .
+#     FILTER regex(str(?director_name), "^Damien Chazelle", "i") .
+#     BIND (STR(?director_name_film_lalaland)  AS ?stripped_title) .
+#     FILTER(contains(?director_name, ?director_name_film_lalaland)) .
+#     {
+#         SELECT ?director_name_film_lalaland
+#         WHERE {
+#             <http://dbpedia.org/resource/La_La_Land> dbo:director ?director_film_lalaland .
+#             ?director_film_lalaland rdfs:label ?director_name_film_lalaland .
+#         }
+#     }
+
+# }
+# LIMIT 20
+
+SELECT ?film ?film_name
+FROM <http://dbpedia.org>
+WHERE {
+    ?film rdf:type dbo:Film .
+    ?film dbo:director ?director_film_lalaland .
+    ?film rdfs:label ?film_name .
+    {
+        SELECT ?director_film_lalaland
+        WHERE {
+            <http://dbpedia.org/resource/La_La_Land> dbo:director ?director_film_lalaland .
+        }
+    }
+
+}
+LIMIT 40
+
+# 2) Mostre sobre os atores que atuaram no filme “La La Land” (http://dbpedia.org/resource/La_La_Land): seu nome e, quando existirem, gênero, data de nascimento e país de nascimento.
+SELECT *
+FROM <http://dbpedia.org>
+WHERE {
+    <http://dbpedia.org/resource/La_La_Land> dbo:starring ?actor .
+    ?actor dbp:name ?actor_name
+    OPTIONAL {
+        ?actor dbo:birthDate ?actor_birthDate 
+    }
+
+}
+LIMIT 40
