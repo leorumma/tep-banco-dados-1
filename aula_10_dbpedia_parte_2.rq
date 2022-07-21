@@ -1,25 +1,5 @@
 # 1) Mostre os filmes (suas IRIs e labels) em que o diretor do filme “La La Land” (http://dbpedia.org/resource/ La_La_Land) atuou como diretor e/ou escritor.
 
-# SELECT *
-# FROM <http://dbpedia.org>
-# WHERE {
-#     ?film rdf:type dbo:Film .
-#     ?film dbo:director ?director .
-#     ?director rdfs:label ?director_name .
-#     FILTER regex(str(?director_name), "^Damien Chazelle", "i") .
-#     BIND (STR(?director_name_film_lalaland)  AS ?stripped_title) .
-#     FILTER(contains(?director_name, ?director_name_film_lalaland)) .
-#     {
-#         SELECT ?director_name_film_lalaland
-#         WHERE {
-#             <http://dbpedia.org/resource/La_La_Land> dbo:director ?director_film_lalaland .
-#             ?director_film_lalaland rdfs:label ?director_name_film_lalaland .
-#         }
-#     }
-
-# }
-# LIMIT 20
-
 SELECT ?film ?film_name
 FROM <http://dbpedia.org>
 WHERE {
@@ -41,10 +21,20 @@ SELECT *
 FROM <http://dbpedia.org>
 WHERE {
     <http://dbpedia.org/resource/La_La_Land> dbo:starring ?actor .
-    ?actor dbp:name ?actor_name
+    ?actor dbp:name ?actor_name.
     OPTIONAL {
-        ?actor dbo:birthDate ?actor_birthDate 
+        ?actor dbp:birthDate ?actor_birthDate.
+        ?actor dbp:occupation ?actor_occupation.
+        ?actor dbp:birthPlace ?actor_birthPlace.
     }
-
 }
 LIMIT 40
+
+# 3) Faça uma consulta para mostrar as IRIs dos filmes lançados no mesmo ano de “La La Land”, mostre também a IRI da categoria (dct:subject) usada para filtrar tais filmes (o termo mais genérico da categorização por cada ano é dbc:Films_by_year).
+select ?film ?subject
+where { 
+    <http://dbpedia.org/resource/La_La_Land> dct:subject ?subject.
+    ?subject skos:broader{1,}  dbc:Films_by_year.   
+    ?film dct:subject ?subject
+}
+LIMIT 150
